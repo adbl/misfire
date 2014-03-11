@@ -1,18 +1,13 @@
 defmodule PlugTest.JsonCodec do
   alias PlugTest.Measures.Measure
   alias PlugTest.Measures.Value
-
-  # TODO JSON.encode escapes / -> \\/ for some reason, seems to look ok when
-  # decoded though
-  @base_uri "http://localhost:4000"
-  @measures "measures/"
-  @values "values/"
+  alias PlugTest.Links
 
   @measure_links ["measures.values":
-   [href: "#{@base_uri}/measures/{measures.id}/values", type: "values"],
+   [href: Links.value("{measures.id}"), type: "values"],
    "measures.current_value":
-   [href: "#{@base_uri}/measures/{measures.id}/values/" <>
-      "{measures.current_value}", type: "values"]
+   [href: Links.value("{measures.id}", "{measures.current_value}"),
+                type: "values"]
   ]
 
   def measures_to_json(measures) do
