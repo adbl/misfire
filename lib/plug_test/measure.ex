@@ -9,6 +9,9 @@ defmodule PlugTest.Measures do
     record_type id: String.t, timestamp: String.t, value: Integer
   end
 
+  @measures "measures/"
+  @values "values/"
+
   def read_measures do
     File.ls!("#{cwd_path(@measures)}") |> Enum.map(&read_measure/1)
   end
@@ -59,7 +62,7 @@ defmodule PlugTest.Measures do
   end
 
   defp values_to_json(values) do
-    [values: values |> Value.to_keywords
+    [values: values |> Enum.map(&Value.to_keywords/1)
     ] |> JSON.encode!
   end
 
