@@ -3,6 +3,7 @@ defmodule PlugTest.AppRouter do
   alias Plug.Conn
   alias PlugTest.Measures
   alias PlugTest.JsonParser
+  alias PlugTest.Links
 
   import PlugTest.JsonCodec
   import Plug.Connection
@@ -53,11 +54,13 @@ defmodule PlugTest.AppRouter do
   post "/measures/:id/values" do
     case read_values(conn, id) do
       { :ok, values } ->
-        case post_json(conn, json_value(length(values)+1)) do
+        new_value_id = length(values)+1
+        case post_json(conn, json_value(new_value_id)) do
           { :ok, conn, value } ->
             Measures.update_values(values ++ [value], id) # abstraction leak
-            # TODO: include created record, and location?
-            respond(conn, @ct_text, 201, @msg_201)
+            conn
+            |> put_resp_header("location", Links.value(id, new_value_id))
+            |> respond(@ct_json, 201, values_to_json([value]))
           { :error, conn } -> conn
         end
       { :error, conn } -> conn
