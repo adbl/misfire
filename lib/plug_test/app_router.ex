@@ -1,9 +1,10 @@
 defmodule PlugTest.AppRouter do
   require IEx
   alias Plug.Conn
-  alias PlugTest.Counters
+  alias PlugTest.Measures
   alias PlugTest.JsonParser
 
+  import PlugTest.JsonCodec
   import Plug.Connection
   use Plug.Router
 
@@ -18,36 +19,35 @@ defmodule PlugTest.AppRouter do
   @msg_404 "404 Not Found"
   @msg_415 "415 Unsupported Media Type" # check rfc 2616/jsonapi.org
 
-  options "/counters"  do
+  options "/measures"  do
     respond(conn, @ct_text, 200, "GET")
   end
 
-  get "/counters"  do
-    json = Counters.read_counters |> Counters.counters_to_json
-    respond(conn, @ct_json, 200, json)
+  get "/measures"  do
+    respond(conn, @ct_json, 200, Measures.read_measures |> measures_to_json)
   end
 
-  options "/counters/:id/values" do
+  options "/measures/:id/values" do
     case read_values(conn, id) do
       { :ok, _ } -> respond(conn, @ct_text, 200, "GET,POST")
       { :error, conn } -> conn
     end
   end
 
-  get "/counters/:id/values" do
+  get "/measures/:id/values" do
     case read_values(conn, id) do
       { :ok, values } ->
-        respond(conn, @ct_json, 200, Counters.values_to_json(values))
+        respond(conn, @ct_json, 200, values_to_json(values))
       { :error, conn } -> conn
     end
   end
 
-  post "/counters/:id/values" do
+  post "/measures/:id/values" do
     case read_values(conn, id) do
       { :ok, values } ->
         case post_json(conn, json_value(length(values)+1)) do
           { :ok, conn, value } ->
-            Counters.update_values(values ++ [value], id) # abstraction leak
+            Measures.update_values(values ++ [value], id) # abstraction leak
             # TODO: include created record, and location?
             respond(conn, @ct_text, 201, @msg_201)
           { :error, conn } -> conn
@@ -56,8 +56,8 @@ defmodule PlugTest.AppRouter do
     end
   end
 
-  defp read_values(conn, counter_id) do
-    case Counters.read_values(counter_id) do
+  defp read_values(conn, measure_id) do
+    case Measures.read_values(measure_id) do
       nil -> { :error, respond(conn, @ct_text, 404, @msg_404) }
       values -> { :ok, values }
     end
@@ -67,7 +67,7 @@ defmodule PlugTest.AppRouter do
     fn (json) ->
          case json["values"] do
            # TODO use pop and assert rest is empty Dict
-           [value] -> Counters.value_from_json(value, new_id)
+           [value] -> Measures.value_from_json(value, new_id)
            _ -> :error
          end
     end
