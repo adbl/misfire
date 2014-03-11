@@ -12,6 +12,7 @@ defmodule PlugTest.JsonCodec do
 
   def measures_to_json(measures) do
     linked_values = measures
+    |> Enum.filter( &(not nil? Measure.current_value(&1)) )
     |> Enum.map( &(Measure.current_value(&1) |> Value.to_keywords) )
 
     measures_json = Enum.map measures, &current_value_link/1
@@ -27,6 +28,13 @@ defmodule PlugTest.JsonCodec do
     |> Measure.to_keywords
     |> Dict.delete(:current_value)
     |> Dict.put(:links, [current_value: id])
+  end
+
+  defp current_value_link(Measure[current_value: nil] = measure) do
+    # TODO anyting on jsonapi.org about missing relationship?
+    measure
+    |> Measure.to_keywords
+    |> Dict.delete(:current_value)
   end
 
   def values_to_json(values) do

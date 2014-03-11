@@ -38,6 +38,7 @@ defmodule PlugTest.Measures do
   def read_values(measure_id) do
     case read_file("#{@values}#{measure_id}") do
       {:error, _} -> nil
+      {:ok, <<>>} -> []
       {:ok, binary} -> values_from_json(binary)
     end
   end

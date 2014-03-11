@@ -28,6 +28,7 @@ defmodule PlugTest.AppRouter do
                        "Origin, Content-Type, Accept")
   end
 
+  # TODO support POST (need to add an empty values file)
   options "/measures"  do
     respond(conn, @ct_text, 200, "GET")
   end
