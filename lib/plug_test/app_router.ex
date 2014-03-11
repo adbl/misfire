@@ -8,6 +8,7 @@ defmodule PlugTest.AppRouter do
   import Plug.Connection
   use Plug.Router
 
+  plug :cors
   plug :match
   plug :dispatch
 
@@ -18,6 +19,13 @@ defmodule PlugTest.AppRouter do
   @msg_400 "400 Bad Request"            # check rfc 2616/jsonapi.org
   @msg_404 "404 Not Found"
   @msg_415 "415 Unsupported Media Type" # check rfc 2616/jsonapi.org
+
+  def cors(conn, _) do
+    conn
+    |> put_resp_header("Access-Control-Allow-Origin", "*")
+    |> put_resp_header("Access-Control-Allow-Headers",
+                       "Origin, Content-Type, Accept")
+  end
 
   options "/measures"  do
     respond(conn, @ct_text, 200, "GET")
