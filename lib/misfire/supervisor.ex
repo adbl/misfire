@@ -1,4 +1,4 @@
-defmodule PlugTest.Supervisor do
+defmodule Misfire.Supervisor do
   use Supervisor.Behaviour
 
   def start_link do
@@ -8,7 +8,7 @@ defmodule PlugTest.Supervisor do
   def init([]) do
     children = [
       # Define workers and child supervisors to be supervised
-      # worker(PlugTest.Worker, [])
+      # worker(Misfire.Worker, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/Supervisor.Behaviour.html

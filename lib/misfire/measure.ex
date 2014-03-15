@@ -1,4 +1,4 @@
-defmodule PlugTest.Measures do
+defmodule Misfire.Measures do
   # TODO: defrecordp?
   defrecord Measure, id: nil, name: nil, type: :nil, current_value: nil do
     # type: event | 2-state (on/off) | numeric | multi-state

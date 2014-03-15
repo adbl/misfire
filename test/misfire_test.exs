@@ -1,4 +1,4 @@
-defmodule PlugTestTest do
+defmodule MisfireTest do
   use ExUnit.Case
 
   test "the truth" do

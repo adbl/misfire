@@ -1,7 +1,7 @@
-defmodule PlugTest.JsonCodec do
-  alias PlugTest.Measures.Measure
-  alias PlugTest.Measures.Value
-  alias PlugTest.Links
+defmodule Misfire.JsonCodec do
+  alias Misfire.Measures.Measure
+  alias Misfire.Measures.Value
+  alias Misfire.Links
 
   @measure_links ["measures.values":
    [href: Links.value("{measures.id}"), type: "values"],

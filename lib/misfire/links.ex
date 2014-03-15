@@ -1,4 +1,4 @@
-defmodule PlugTest.Links do
+defmodule Misfire.Links do
   # TODO JSON.encode escapes / -> \\/ for some reason, seems to look ok when
   # decoded though
   @base_uri "http://localhost:4000"

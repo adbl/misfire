@@ -1,11 +1,11 @@
-defmodule PlugTest.AppRouter do
+defmodule Misfire.AppRouter do
   require IEx
   alias Plug.Conn
-  alias PlugTest.Measures
-  alias PlugTest.JsonParser
-  alias PlugTest.Links
+  alias Misfire.Measures
+  alias Misfire.JsonParser
+  alias Misfire.Links
 
-  import PlugTest.JsonCodec
+  import Misfire.JsonCodec
   import Plug.Connection
   use Plug.Router
 

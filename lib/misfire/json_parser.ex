@@ -1,4 +1,4 @@
-defmodule PlugTest.JsonParser do
+defmodule Misfire.JsonParser do
   alias Plug.Conn
 
   def decode(Conn[adapter: { adapter, state }] = conn) do
