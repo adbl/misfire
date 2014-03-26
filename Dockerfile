@@ -10,9 +10,5 @@ RUN rm -rf /tmp/rebar
 
 ADD . /opt/misfire
 WORKDIR /opt/misfire
-mix deps.get
-mix deps.compile
-mix compile
-mix test
 EXPOSE 4000
-CMD cd /opt/misfire && mix run --no-halt
+CMD mix run --no-halt
