@@ -13,14 +13,7 @@ endif
 image := $(DOCKER_USERNAME)/$(DOCKER_REPOSITORY)$(tag)
 log = image-$(gitsha)-$(gitref).log
 
-.PHONY: clean deps git-tree-or-index-is-dirty
-
-deps:
-	mix deps.get
-	mix deps.compile
-
-clean:
-	mix clean
+.PHONY: git-tree-or-index-is-dirty
 
 # fail if git tree or index are dirty
 git-tree-or-index-is-dirty:
@@ -30,5 +23,5 @@ image: $(log)
 
 # clean app beam files to avoid mix warnings when running container:
 # "warning: redefining module ..."
-$(log): git-tree-or-index-is-dirty deps clean
+$(log): git-tree-or-index-is-dirty
 	docker build -t $(image) . |tee $@
