@@ -15,11 +15,11 @@ log = image-$(gitsha)-$(gitref).log
 
 .PHONY: git-tree-or-index-is-dirty
 
+image: $(log)
+
 # fail if git tree or index are dirty
 git-tree-or-index-is-dirty:
 	@git diff-index --quiet HEAD
-
-image: $(log)
 
 # clean app beam files to avoid mix warnings when running container:
 # "warning: redefining module ..."
