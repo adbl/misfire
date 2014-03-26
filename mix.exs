@@ -4,7 +4,7 @@ defmodule Misfire.Mixfile do
   def project do
     [ app: :misfire,
       version: "0.0.1",
-      elixir: "~> 0.12.4",
+      elixir: "~> 0.12.5",
       deps: deps ]
   end
 
