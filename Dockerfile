@@ -10,6 +10,5 @@ RUN rm -rf /tmp/rebar
 
 ADD . /opt/misfire
 WORKDIR /opt/misfire
-RUN mix clean
 EXPOSE 4000
 CMD mix run --no-halt
