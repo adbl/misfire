@@ -1,6 +1,6 @@
-defmodule Misfire.Measures do
+defmodule Misfire.Activities do
   # TODO: defrecordp?
-  defrecord Measure, id: nil, name: nil, type: :nil, current_value: nil do
+  defrecord Activity, id: nil, name: nil, type: :nil, current_value: nil do
     # type: event | 2-state (on/off) | numeric | multi-state
     record_type id: String.t, name: String.t, type: :event|:duration
   end
@@ -9,34 +9,34 @@ defmodule Misfire.Measures do
     record_type id: String.t, timestamp: String.t, value: Integer
   end
 
-  @measures "measures/"
+  @activities "activities/"
   @values "values/"
 
-  def read_measures do
-    File.ls!("#{cwd_path(@measures)}") |> Enum.map(&read_measure/1)
+  def read_activities do
+    File.ls!("#{cwd_path(@activities)}") |> Enum.map(&read_activity/1)
   end
 
-  def read_measure(measure_id) do
-    case read_file("#{@measures}#{measure_id}") do
+  def read_activity(activity_id) do
+    case read_file("#{@activities}#{activity_id}") do
       {:error, _} -> nil
       {:ok, binary} ->
-        measure = measure_from_json(measure_id, binary)
-        measure |> read_current_value |> measure.current_value
+        activity = activity_from_json(activity_id, binary)
+        activity |> read_current_value |> activity.current_value
     end
   end
 
-  defp measure_from_json(id, binary) do
+  defp activity_from_json(id, binary) do
     json = JSON.decode!(binary)
-    Measure[id: id, name: Dict.fetch!(json, "name"),
+    Activity[id: id, name: Dict.fetch!(json, "name"),
                                type: Dict.fetch!(json, "type")]
   end
 
-  def read_current_value(Measure[id: id]) do
+  def read_current_value(Activity[id: id]) do
     (read_values(id) || []) |> Enum.at(-1)
   end
 
-  def read_values(measure_id) do
-    case read_file("#{@values}#{measure_id}") do
+  def read_values(activity_id) do
+    case read_file("#{@values}#{activity_id}") do
       {:error, _} -> nil
       {:ok, <<>>} -> []
       {:ok, binary} -> values_from_json(binary)
@@ -57,9 +57,9 @@ defmodule Misfire.Measures do
     Value[id: id, timestamp: timestamp, value: value]
   end
 
-  def update_values(values, measure_id) do
+  def update_values(values, activity_id) do
     # TODO version control
-    File.write! cwd_path("#{@values}#{measure_id}"), values_to_json(values)
+    File.write! cwd_path("#{@values}#{activity_id}"), values_to_json(values)
   end
 
   defp values_to_json(values) do

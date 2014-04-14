@@ -1,9 +1,7 @@
 defmodule Misfire.Links do
-  # TODO JSON.encode escapes / -> \\/ for some reason, seems to look ok when
-  # decoded though
-  @base_uri "http://localhost:4000"
+  @base_uri "http://localhost:4000/api"
 
-  def value(measure_id, value_id \\ "") do
-    "#{@base_uri}/measures/#{measure_id}/values/#{value_id}"
+  def value(activity_id, value_id \\ "") do
+    "#{@base_uri}/activities/#{activity_id}/values/#{value_id}"
   end
 end

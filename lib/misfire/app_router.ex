@@ -1,7 +1,7 @@
 defmodule Misfire.AppRouter do
   require IEx
   alias Plug.Conn
-  alias Misfire.Measures
+  alias Misfire.Activities
   alias Misfire.JsonParser
   alias Misfire.Links
 
@@ -29,22 +29,23 @@ defmodule Misfire.AppRouter do
   end
 
   # TODO support POST (need to add an empty values file)
-  options "/measures"  do
+  options "/api/activities"  do
     respond(conn, @ct_text, 200, "GET")
   end
 
-  get "/measures"  do
-    respond(conn, @ct_json, 200, Measures.read_measures |> measures_to_json)
+  get "/api/activities"  do
+    respond(conn, @ct_json, 200, Activities.read_activities |>
+                                              activities_to_json)
   end
 
-  options "/measures/:id/values" do
+  options "/api/activities/:id/values" do
     case read_values(conn, id) do
       { :ok, _ } -> respond(conn, @ct_text, 200, "GET,POST")
       { :error, conn } -> conn
     end
   end
 
-  get "/measures/:id/values" do
+  get "/api/activities/:id/values" do
     case read_values(conn, id) do
       { :ok, values } ->
         respond(conn, @ct_json, 200, values_to_json(values))
@@ -52,13 +53,14 @@ defmodule Misfire.AppRouter do
     end
   end
 
-  post "/measures/:id/values" do
+  post "/api/activities/:id/values" do
     case read_values(conn, id) do
       { :ok, values } ->
         new_value_id = length(values)+1
         case post_json(conn, json_value(new_value_id)) do
           { :ok, conn, value } ->
-            Measures.update_values(values ++ [value], id) # abstraction leak
+            # abstraction leak
+            Activities.update_values(values ++ [value], id)
             conn
             |> put_resp_header("location", Links.value(id, new_value_id))
             |> respond(@ct_json, 201, values_to_json([value]))
@@ -68,8 +70,8 @@ defmodule Misfire.AppRouter do
     end
   end
 
-  defp read_values(conn, measure_id) do
-    case Measures.read_values(measure_id) do
+  defp read_values(conn, activity_id) do
+    case Activities.read_values(activity_id) do
       nil -> { :error, respond(conn, @ct_text, 404, @msg_404) }
       values -> { :ok, values }
     end
@@ -79,7 +81,7 @@ defmodule Misfire.AppRouter do
     fn (json) ->
          case json["values"] do
            # TODO use pop and assert rest is empty Dict
-           [value] -> Measures.value_from_json(value, new_id)
+           [value] -> Activities.value_from_json(value, new_id)
            _ -> :error
          end
     end
