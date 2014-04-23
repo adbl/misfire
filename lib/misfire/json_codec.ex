@@ -1,6 +1,6 @@
 defmodule Misfire.JsonCodec do
-  alias Misfire.Activities.Activity
-  alias Misfire.Activities.Value
+  alias Misfire.Model.Activity.Activity
+  alias Misfire.Model.Value.Value
   alias Misfire.Links
 
   @activity_links ["activities.values":
@@ -41,5 +41,13 @@ defmodule Misfire.JsonCodec do
   def values_to_json(values) do
     [values: values |> Enum.map(&Value.to_keywords/1)
     ] |> JSON.encode!
+  end
+
+  def value_from_json(json, new_id) do
+    # TODO check for nil and assert empty w/Dict.pop
+    id = new_id || json["id"]
+    timestamp = json["timestamp"]
+    value = json["value"]
+    Value[id: id, timestamp: timestamp, value: value]
   end
 end
