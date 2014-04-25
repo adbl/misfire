@@ -12,12 +12,12 @@ defmodule Misfire.Controller do
     end
   end
 
-  import Plug.Connection
+  alias Plug.Conn
 
   def respond(conn, ct, code, body, headers \\ []) do
     Enum.reduce(headers, conn,
-                fn { k, v }, conn -> put_resp_header(conn, k, v) end)
-    |> put_resp_content_type(ct) |> send_resp(code, body)
+                fn { k, v }, conn -> Conn.put_resp_header(conn, k, v) end)
+    |> Conn.put_resp_content_type(ct) |> Conn.send_resp(code, body)
   end
 
 end

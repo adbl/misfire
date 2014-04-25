@@ -1,5 +1,5 @@
 defmodule Misfire.AppRouter do
-  import Plug.Connection
+  alias Plug.Conn
   use Plug.Router
 
   use Misfire.Controller
@@ -14,9 +14,9 @@ defmodule Misfire.AppRouter do
   # TODO only for dev
   def cors(conn, _) do
     conn
-    |> put_resp_header("Access-Control-Allow-Origin", "*")
-    |> put_resp_header("Access-Control-Allow-Headers",
-                       "Origin, Content-Type, Accept")
+    |> Conn.put_resp_header("Access-Control-Allow-Origin", "*")
+    |> Conn.put_resp_header("Access-Control-Allow-Headers",
+                            "Origin, Content-Type, Accept")
   end
 
   # TODO support POST (need to add an empty values file)

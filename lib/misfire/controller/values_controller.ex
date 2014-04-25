@@ -1,5 +1,4 @@
 defmodule Misfire.Controller.Values do
-  alias Plug.Conn
   use Misfire.Controller
 
   import Misfire.JsonCodec
@@ -55,7 +54,7 @@ defmodule Misfire.Controller.Values do
     end
   end
 
-  defp post_json(Conn[req_headers: req_headers] = conn, parse_fun) do
+  defp post_json(%Plug.Conn{req_headers: req_headers} = conn, parse_fun) do
     # TODO handle utf-8 or encoding
     case req_headers["content-type"] do
       @ct_json -> decode_json(conn, parse_fun)

@@ -4,15 +4,14 @@ defmodule Misfire.Mixfile do
   def project do
     [ app: :misfire,
       version: "0.0.1",
-      elixir: "~> 0.12.5",
+      elixir: "~> 0.13.0",
       deps: deps ]
   end
 
   # Configuration for the OTP application
   def application do
-    [mod: { Misfire, [] },
-     applications: [:cowboy, :plug]
-    ]
+    [ mod: { Misfire, [] },
+      applications: [:cowboy, :plug] ]
   end
 
   # Returns the list of dependencies in the format:
@@ -22,7 +21,7 @@ defmodule Misfire.Mixfile do
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
     [ { :cowboy, github: "extend/cowboy" },
-      { :plug, "0.3.0", github: "elixir-lang/plug" },
+      { :plug, "~> 0.4.1", github: "elixir-lang/plug" },
       { :json, github: "cblage/elixir-json"}
     ]
   end
