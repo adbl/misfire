@@ -1,7 +1,7 @@
 defmodule Misfire.Controller.Values do
   use Misfire.Controller
 
-  import Misfire.JsonCodec
+  alias Misfire.JsonCodec
   alias Misfire.Links
   alias Misfire.Model.Value
 
@@ -15,7 +15,7 @@ defmodule Misfire.Controller.Values do
   def get(conn, [activity: id]) do
     case read_values(conn, id) do
       { :ok, values } ->
-        respond(conn, @ct_json, 200, values_to_json(values))
+        respond(conn, @ct_json, 200, to_json(values))
       { :error, conn } -> conn
     end
   end
@@ -29,12 +29,16 @@ defmodule Misfire.Controller.Values do
           { :ok, conn, value } ->
             # abstraction leak
             Value.update(values ++ [value], id)
-            respond(conn, @ct_json, 201, values_to_json([value]),
+            respond(conn, @ct_json, 201, to_json([value]),
                     [{"location", Links.value(id, new_value_id)}])
           { :error, conn } -> conn
         end
       { :error, conn } -> conn
     end
+  end
+
+  defp to_json(values) do
+    [ values: Enum.map(values, &JsonCodec.value_to_json/1) ] |> JSON.encode!
   end
 
   defp read_values(conn, activity_id) do
@@ -48,7 +52,7 @@ defmodule Misfire.Controller.Values do
     fn (json) ->
          case json["values"] do
            # TODO use pop and assert rest is empty Dict
-           [value] -> value_from_json(value, new_id)
+           [value] -> JsonCodec.value_from_json(value, new_id)
            _ -> :error
          end
     end

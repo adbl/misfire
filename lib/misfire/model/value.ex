@@ -1,14 +1,13 @@
 defmodule Misfire.Model.Value do
+  alias __MODULE__
   alias Misfire.Model.Value.Data
 
-  defrecord Value, id: nil, timestamp: nil, value: nil do
-    record_type id: String.t, timestamp: String.t, value: Integer
-  end
+  defstruct id: nil :: String.t, timestamp: nil :: String.t, value: nil
 
   def list(activity_id) do
     case Data.read_values(activity_id) do
       nil -> nil
-      values -> lc value inlist values, do: Value.new(value)
+      values -> for value <- values, do: struct(Value, value)
     end
   end
 
@@ -19,6 +18,7 @@ end
 
 defmodule Misfire.Model.Value.Data do
   import Misfire.Model.Data
+  alias Misfire.JsonCodec
 
   @values "values/"
 
@@ -26,19 +26,20 @@ defmodule Misfire.Model.Value.Data do
     case read_file("#{@values}#{activity_id}") do
       {:error, _}   -> nil
       {:ok, <<>>}   -> []         # empty, list
-      {:ok, binary} -> JSON.decode!(binary)
-                       |> Dict.fetch!("values")
-                       |> Enum.map(&Keyword.from_enum/1)
+      {:ok, binary} ->
+        binary |> JSON.decode! |> Dict.fetch!("values")
+        |> Enum.map &%{ id: Dict.fetch!(&1, "id"),
+                        timestamp: Dict.fetch!(&1, "timestamp"),
+                        value: Dict.fetch!(&1, "value") }
     end
   end
 
   def update_values(values, activity_id) do
     # TODO version control
-    File.write! cwd_path("#{@values}#{activity_id}"), values_to_json(values)
+    File.write! cwd_path("#{@values}#{activity_id}"), serialize(values)
   end
 
-  defp values_to_json(values) do
-    [values: values |> Enum.map(&(&1.to_keywords))]
-    |> JSON.encode!
+  defp serialize(values) do
+    [ values: Enum.map(values, &JsonCodec.value_to_json/1)] |> JSON.encode!
   end
 end

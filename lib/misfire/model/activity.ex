@@ -1,12 +1,9 @@
 defmodule Misfire.Model.Activity do
+  alias __MODULE__
   alias Misfire.Model.Value
   alias Misfire.Model.Activity.Data
 
-  # TODO: defrecordp?
-  defrecord Activity, id: nil, name: nil, type: :nil, current_value: nil do
-    # type: event | 2-state (on/off) | numeric | multi-state
-    record_type id: String.t, name: String.t, type: :event|:duration
-  end
+  defstruct id: nil :: String.t, name: nil :: String.t, type: nil :: :event|:duration, current_value: nil :: Value.t
 
   def list do
     Data.list |> Enum.map(&read/1)
@@ -15,8 +12,8 @@ defmodule Misfire.Model.Activity do
   def read(id) do
     case Data.read(id) do
       nil -> nil
-      data ->
-        Activity.new([id: id, current_value: List.last(Value.list(id))] ++ data)
+      data -> %Activity{ struct(Activity, data) |
+                         id: id, current_value: List.last(Value.list(id)) }
     end
   end
 end
@@ -35,7 +32,8 @@ defmodule Misfire.Model.Activity.Data do
       {:error, _}   -> nil
       {:ok, binary} ->
         json = JSON.decode!(binary)
-        [name: Dict.fetch!(json, "name"), type: Dict.fetch!(json, "type")]
+        %{ name: Dict.fetch!(json, "name"),
+           type: Dict.fetch!(json, "type") }
     end
   end
 end
