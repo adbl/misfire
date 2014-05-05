@@ -25,8 +25,8 @@ defmodule Misfire.Controller.Values do
       { :ok, values } ->
         # leaky abstraction
         new_value_id = length(values)+1
-        case post_json(conn, json_value(new_value_id)) do
-          { :ok, conn, value } ->
+        case handle_post_json(conn, json_value(new_value_id)) do
+          { :ok, {conn, value} } ->
             # abstraction leak
             Value.update(values ++ [value], id)
             respond(conn, @ct_json, 201, to_json([value]),
@@ -52,33 +52,9 @@ defmodule Misfire.Controller.Values do
     fn (json) ->
          case json["values"] do
            # TODO use pop and assert rest is empty Dict
-           [value] -> JsonCodec.value_from_json(value, new_id)
+           [value] -> { :ok, JsonCodec.value_from_json(value, new_id) }
            _ -> :error
          end
-    end
-  end
-
-  defp post_json(%Plug.Conn{req_headers: req_headers} = conn, parse_fun) do
-    # TODO handle utf-8 or encoding
-    case req_headers["content-type"] do
-      @ct_json -> decode_json(conn, parse_fun)
-      _ -> { :error, respond(conn, @ct_text, 415, @msg_415) }
-    end
-  end
-
-  defp decode_json(conn, parse_fun) do
-    case Misfire.JsonParser.decode(conn) do
-      { :ok, conn, json } -> parse_json(conn, json, parse_fun)
-      # TODO: nicer error message, json encoded?
-      { :error, conn } -> { :error, respond(conn, @ct_text, 400, @msg_400) }
-    end
-  end
-
-  defp parse_json(conn, json, parse_fun) do
-    case parse_fun.(json) do
-      # TODO: nicer error message, json encoded?
-      :error -> { :error, respond(conn, @ct_text, 400, @msg_400) }
-      parsed -> { :ok, conn, parsed }
     end
   end
 end

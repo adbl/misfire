@@ -10,6 +10,7 @@ defmodule Misfire.JsonCodec do
     id = new_id || json["id"]
     timestamp = json["timestamp"]
     value = json["value"]
+    # TODO Validate using Value.new
     %Value{id: id, timestamp: timestamp, value: value}
   end
 end
