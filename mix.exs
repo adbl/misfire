@@ -21,8 +21,8 @@ defmodule Misfire.Mixfile do
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
     [ { :cowboy, github: "extend/cowboy" },
-      { :plug, "~> 0.4.1", github: "elixir-lang/plug" },
-      { :json, github: "cblage/elixir-json"}
+      { :plug, "~> 0.4.1", github: "elixir-lang/plug", tag: "v0.4.1" },
+      { :json, github: "cblage/elixir-json" }
     ]
   end
 end
